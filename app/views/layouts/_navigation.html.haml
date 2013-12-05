@@ -1,36 +1,146 @@
-.row
-  - if @slides
-    - @slides.each do |slide|
-      .span3= link_to image_tag(slide.photo.url(:medium)), slide
+%meta{content: "width=device-width, initial-scale=1.0", name: "viewport"}
+%link{href: "assets/css/bootstrap-responsive.css", rel: "stylesheet"}
+/* New desktopwide Responsive Support*/
+:css
+  .hidden-desktopwide {
+    display: none !important;
+  }
+  .visible-desktopwide {
+    display: inherit !important;
+  }
+
+  @media (min-width: 980px) and (max-width: 1200px) {
+    .hidden-desktopwide {
+      display: inherit !important;
+    }
+    .visible-desktopwide {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 979px) {
+    .hidden-desktopwide {
+      display: inherit !important;
+    }
+    .visible-desktopwide {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hidden-desktopwide {
+      display: inherit !important;
+    }
+    .visible-desktopwide {
+      display: none !important;
+    }
+  }
+
+.hidden-phone
+  .row
+    - if @slides
+      - @slides.each do |slide|
+        .span3= link_to image_tag(slide.photo.url(:medium)), slide
 .row
   .span9
     .navbar{style: "margin-top: 42px;"}
-      .navbar-inner  
-        %ul.nav
-          %li= link_to  "Horizon", root_path, {class: "brand"}
+      .hidden-desktopwide
+        .hidden-phone    
+          .navbar-inner 
+            %ul.nav
+              %li= link_to  "Horizon", root_path, {class: "brand"}
+            %ul.nav.pull-right
+              %li.divider-vertical
+              %li.dropdown
+                %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                  Pages
+                  %b.caret
+                %ul.dropdown-menu
+                  - Page.all.each do |page|
+                    - if current_page?(articles_path(page_id: page.id))
+                      %li.active= link_to page.name, articles_path(page_id: page.id)
+                    - else
+                      %li= link_to page.name, articles_path(page_id: page.id)
+              %li.divider-vertical
+              %li.dropdown
+                %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                  - if user_signed_in?
+                    = current_user.name
+                  - else
+                    Stranger
+                  %b.caret
+                %ul.dropdown-menu
+                  - if user_signed_in?
+                    %li
+                      = link_to "Profile", current_user
+                      - if can? :create, Article
+                        %li= link_to "Manage", users_path
+                      %li= link_to "Log Out", destroy_user_session_path, method: :delete
+                  - else
+                    %li= link_to "Sign Up", new_user_registration_path
+                    %li= link_to "Sign In", new_user_session_path 
+    .navbar{style: "margin-top: 42px;"}
+      .visible-phone   
+        .navbar-inner 
+          .nav-collapse.colapse
+            %ul.nav
+              %li= link_to  "Horizon", root_path, {class: "brand"}
+              - Page.all.each do |page|
+                - if current_page?(articles_path(page_id: page.id))
+                  %li.active= link_to page.name, articles_path(page_id: page.id)
+                - else
+                  %li= link_to page.name, articles_path(page_id: page.id)
+          %a.btn.btn-navbar{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
+            %span.icon-th-list
+          %ul.nav
+            %li.divider-vertical
+            %li.dropdown
+              %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                - if user_signed_in?
+                  = current_user.name
+                - else
+                  Stranger
+                %b.caret
+              %ul.dropdown-menu
+                - if user_signed_in?
+                  %li
+                    = link_to "Profile", current_user
+                    - if can? :create, Article
+                      %li= link_to "Manage", users_path
+                    %li= link_to "Log Out", destroy_user_session_path, method: :delete
+                - else
+                  %li= link_to "Sign Up", new_user_registration_path
+                  %li= link_to "Sign In", new_user_session_path    
+              
+  
+      .visible-desktopwide
+        .navbar-inner  
+          %ul.nav
+            %li= link_to  "Horizon", root_path, {class: "brand"}
+            - Page.all.each do |page|
+              - if current_page?(articles_path(page_id: page.id))
+                %li.active= link_to page.name, articles_path(page_id: page.id)
+              - else
+                %li= link_to page.name, articles_path(page_id: page.id)
+          %ul.nav.pull-right
+            %li.divider-vertical
+            %li.dropdown
+              %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                - if user_signed_in?
+                  = current_user.name
+                - else
+                  Stranger
+                %b.caret
+              %ul.dropdown-menu
+                - if user_signed_in?
+                  %li
+                    = link_to "Profile", current_user
+                    - if can? :create, Article
+                      %li= link_to "Manage", users_path
+                    %li= link_to "Log Out", destroy_user_session_path, method: :delete
+                - else
+                  %li= link_to "Sign Up", new_user_registration_path
+                  %li= link_to "Sign In", new_user_session_path 
 
-          - Page.all.each do |page|
-            - if current_page?(articles_path(page_id: page.id))
-              %li.active= link_to page.name, articles_path(page_id: page.id)
-            - else
-              %li= link_to page.name, articles_path(page_id: page.id)
-        %ul.nav.pull-right
-          %li.divider-vertical
-          %li.dropdown
-            
-            %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
-              - if user_signed_in?
-                = current_user.name
-              - else
-                Stranger
-              %b.caret
-            %ul.dropdown-menu
-              - if user_signed_in?
-                %li
-                  = link_to "Profile", current_user
-                  - if can? :create, Article
-                    %li= link_to "Manage", users_path
-                  %li= link_to "Log Out", destroy_user_session_path, method: :delete
-              - else
-                %li= link_to "Sign Up", new_user_registration_path
-                %li= link_to "Sign In", new_user_session_path
+
+      
